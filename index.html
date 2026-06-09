@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarurat Care Foundation | Jaisi Jarurat, Vaisi Care</title>
+    <meta name="description" content="Jarurat Care Foundation connects cancer patients with oncologists, volunteers, and emotional support — completely free.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0d9488', // Teal
+                        'primary-dark': '#0f766e',
+                        secondary: '#f97316', // Warm Orange
+                        'secondary-dark': '#ea580c',
+                        accent: '#ccfbf1', // Light Teal
+                        base: '#fafafa'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-fast': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #1f2937;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fafafa; }
+        ::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0f766e; }
+        
+        /* Glassmorphism */
+        .glass-nav {
+            background: rgba(13, 148, 136, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Form Error State */
+        .input-error {
+            border-color: #ef4444 !important;
+        }
+        .input-error:focus {
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        /* Chatbot Dots */
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background-color: #0d9488;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 1px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Chat Toggle Scale */
+        #chat-window {
+            transform-origin: bottom right;
+        }
+    </style>
+</head>
+<body class="antialiased font-sans relative overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 backdrop-blur-xs glass-nav shadow-md transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-2 group">
+                    <svg class="w-8 h-8 text-white group-hover:scale-110 transition transform duration-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span class="font-bold text-xl text-white tracking-wide">Jarurat Care</span>
+                </a>
+                
+                <!-- Desktop Links -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-white hover:text-accent hover:drop-shadow-sm font-medium transition">Home</a>
+                    <a href="#about" class="text-white hover:text-accent hover:drop-shadow-sm font-medium transition">About</a>
+                    <a href="#support" class="text-white hover:text-accent hover:drop-shadow-sm font-medium transition">Get Support</a>
+                    <a href="#volunteer" class="text-white hover:text-accent hover:drop-shadow-sm font-medium transition">Volunteer</a>
+                    <a href="#contact" class="text-white hover:text-accent hover:drop-shadow-sm font-medium transition">Contact</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-white hover:text-accent focus:outline-none">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-primary border-t border-teal-600 shadow-lg">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-teal-700">Home</a>
+                <a href="#about" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-teal-700">About</a>
+                <a href="#support" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-teal-700">Get Support</a>
+                <a href="#volunteer" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-teal-700">Volunteer</a>
+                <a href="#contact" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-teal-700">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-gradient-to-br from-primary to-teal-900">
+        <!-- Animated Background Circles -->
+        <div class="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+            <div class="absolute rounded-full bg-white/10 w-96 h-96 -top-20 -left-20 animate-float-slow mix-blend-overlay filter blur-2xl"></div>
+            <div class="absolute rounded-full bg-accent/20 w-[30rem] h-[30rem] bottom-10 -right-20 animate-float mix-blend-overlay filter blur-3xl"></div>
+            <div class="absolute rounded-full bg-white/10 w-64 h-64 top-1/2 left-1/4 animate-float-fast mix-blend-overlay filter blur-xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="reveal">
+                <span class="inline-block py-1 px-3 rounded-full bg-teal-800/50 text-accent text-sm font-semibold mb-6 border border-teal-700">
+                    Jaisi Jarurat, Vaisi Care
+                </span>
+                <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+                    You Are Not Alone In <span class="text-secondary drop-shadow-md">This Fight</span>
+                </h1>
+                <p class="text-lg text-teal-50 mb-8 max-w-lg leading-relaxed">
+                    Jarurat Care connects cancer patients with oncologists, volunteers, and emotional support — completely free. Specializing in Gallbladder, Cholangiocarcinoma, and Liver Cancer.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#support" class="px-8 py-4 bg-secondary hover:bg-secondary-dark text-white rounded-full font-semibold text-center transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        Get Support
+                    </a>
+                    <a href="#volunteer" class="px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary rounded-full font-semibold text-center transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        Volunteer With Us
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex justify-center items-center reveal">
+                <!-- Abstract Cancer Ribbon Illustration -->
+                <svg width="400" height="400" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-md mx-auto animate-float drop-shadow-2xl">
+                    <path d="M30 140 C 5 100, 15 50, 35 35 C 55 20, 65 40, 60 60 C 55 80, 40 95, 25 110 C 15 120, 10 130, 20 140" stroke="#f97316" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M70 140 C 95 100, 85 50, 65 35 C 45 20, 35 40, 40 60 C 45 80, 60 95, 75 110 C 85 120, 90 130, 80 140" stroke="#ccfbf1" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Bottom Wave Curve -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-10">
+            <svg class="relative block w-full h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,126.38,201.5,119.53,242.84,115.53,283.47,105.74,321.39,56.44Z" fill="#fafafa"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-base relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Mission</h2>
+                <div class="w-20 h-1 bg-secondary mx-auto mb-6 rounded-full"></div>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    At Jarurat Care Foundation, we believe that no one should face cancer alone. We are dedicated to providing comprehensive support to patients battling Gallbladder Cancer, Cholangiocarcinoma, and Liver Cancer. From medical guidance to emotional counseling, our community stands with you every step of the way.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <!-- Stat Card 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 text-center border border-gray-100 reveal">
+                    <div class="w-16 h-16 bg-teal-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900 mb-2">500+</h3>
+                    <p class="text-gray-500 font-medium">Patients Helped</p>
+                </div>
+                <!-- Stat Card 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 text-center border border-gray-100 reveal" style="transition-delay: 100ms;">
+                    <div class="w-16 h-16 bg-orange-50 text-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900 mb-2">50+</h3>
+                    <p class="text-gray-500 font-medium">Oncologists</p>
+                </div>
+                <!-- Stat Card 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 text-center border border-gray-100 reveal" style="transition-delay: 200ms;">
+                    <div class="w-16 h-16 bg-teal-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900 mb-2">3</h3>
+                    <p class="text-gray-500 font-medium">Cancer Types Supported</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Patient Support Form Section -->
+    <section id="support" class="py-20 bg-white relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Request Support</h2>
+                <p class="text-gray-600">Fill out the form below and our team will connect with you within 24 hours.</p>
+            </div>
+            
+            <div class="bg-base p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 reveal">
+                <!-- Success Message -->
+                <div id="patient-success" class="hidden mb-8 p-4 bg-teal-50 border border-teal-200 text-teal-800 rounded-xl flex items-center shadow-sm animate-slide-up">
+                    <svg class="w-6 h-6 mr-3 text-teal-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span id="patient-success-text" class="font-medium"></span>
+                </div>
+
+                <form id="patient-form" class="space-y-6" novalidate>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Full Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="fullName" id="p-name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white" placeholder="John Doe">
+                            <p id="p-name-error" class="hidden text-red-500 text-xs mt-1">Full name is required.</p>
+                        </div>
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" id="p-email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white" placeholder="john@example.com">
+                            <p id="p-email-error" class="hidden text-red-500 text-xs mt-1">Valid email is required.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" name="phone" id="p-phone" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white" placeholder="+91 9876543210">
+                            <p id="p-phone-error" class="hidden text-red-500 text-xs mt-1">Phone number is required.</p>
+                        </div>
+                        <!-- Cancer Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Cancer Type <span class="text-red-500">*</span></label>
+                            <select name="cancerType" id="p-cancer" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white appearance-none">
+                                <option value="">Select an option</option>
+                                <option value="Gallbladder Cancer">Gallbladder Cancer</option>
+                                <option value="Cholangiocarcinoma">Cholangiocarcinoma</option>
+                                <option value="Liver Cancer">Liver Cancer</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <p id="p-cancer-error" class="hidden text-red-500 text-xs mt-1">Please select a type.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Stage -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Stage of Diagnosis</label>
+                            <select name="stage" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white appearance-none">
+                                <option value="">Select an option</option>
+                                <option value="Early Stage">Early Stage</option>
+                                <option value="Advanced Stage">Advanced Stage</option>
+                                <option value="Not Sure">Not Sure</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Type of Support Needed -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Type of Support Needed <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="p-support-group">
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="supportNeeded" value="Medical Report Review" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Medical Report Review</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="supportNeeded" value="Nutritional Guidance" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Nutritional Guidance</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="supportNeeded" value="Emotional Support" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Emotional Support</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="supportNeeded" value="Financial Assistance" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Financial Assistance</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="supportNeeded" value="Connect with Oncologist" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Connect with Oncologist</span>
+                            </label>
+                        </div>
+                        <p id="p-support-error" class="hidden text-red-500 text-xs mt-2">Please select at least one option.</p>
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Message / Additional Details</label>
+                        <textarea name="message" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white resize-none" placeholder="Tell us how we can help..."></textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-secondary to-orange-500 hover:from-orange-500 hover:to-secondary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                        Submit Request
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Summary Card -->
+            <div id="patient-summary-container"></div>
+            
+        </div>
+    </section>
+
+    <!-- Volunteer Section -->
+    <section id="volunteer" class="py-20 bg-teal-50 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Volunteer With Us</h2>
+                <p class="text-gray-600">Join our community of caregivers making a difference.</p>
+            </div>
+            
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-teal-100 reveal">
+                <!-- Success Message -->
+                <div id="volunteer-success" class="hidden mb-8 p-4 bg-teal-50 border border-teal-200 text-teal-800 rounded-xl flex items-center shadow-sm">
+                    <svg class="w-6 h-6 mr-3 text-teal-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span id="volunteer-success-text" class="font-medium"></span>
+                </div>
+
+                <form id="volunteer-form" class="space-y-6" novalidate>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="fullName" id="v-name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50">
+                            <p id="v-name-error" class="hidden text-red-500 text-xs mt-1">Required.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" id="v-email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50">
+                            <p id="v-email-error" class="hidden text-red-500 text-xs mt-1">Valid email required.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" name="phone" id="v-phone" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50">
+                            <p id="v-phone-error" class="hidden text-red-500 text-xs mt-1">Required.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <input type="text" name="city" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Profession</label>
+                            <select name="profession" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50 appearance-none">
+                                <option value="">Select</option>
+                                <option value="Doctor/Oncologist">Doctor/Oncologist</option>
+                                <option value="Nutritionist">Nutritionist</option>
+                                <option value="Counselor/Therapist">Counselor/Therapist</option>
+                                <option value="Student">Student</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                            <select name="availability" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50 appearance-none">
+                                <option value="Weekdays">Weekdays</option>
+                                <option value="Weekends">Weekends</option>
+                                <option value="Both">Both</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">How can you help?</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" name="howHelp" value="Medical Consultations" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Medical Consultations</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" name="howHelp" value="Emotional Support" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Emotional Support</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" name="howHelp" value="Awareness Campaigns" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Awareness Campaigns</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" name="howHelp" value="Fundraising" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Fundraising</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-200 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" name="howHelp" value="Administrative Help" class="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary">
+                                <span class="text-gray-700 text-sm">Administrative Help</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
+                        <textarea name="message" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-primary to-teal-700 hover:from-teal-700 hover:to-primary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                        Join As Volunteer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white relative">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get In Touch</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 reveal">
+                <!-- Success Message -->
+                <div id="contact-success" class="hidden mb-8 p-4 bg-teal-50 border border-teal-200 text-teal-800 rounded-xl flex items-center shadow-sm">
+                    <svg class="w-6 h-6 mr-3 text-teal-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span>Thank you for reaching out! We'll get back to you within 48 hours.</span>
+                </div>
+
+                <form id="contact-form" class="space-y-6" novalidate>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="c-name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary outline-none transition">
+                        <p id="c-name-error" class="hidden text-red-500 text-xs mt-1">Required.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="c-email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary outline-none transition">
+                        <p id="c-email-error" class="hidden text-red-500 text-xs mt-1">Valid email required.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <input type="text" id="c-subject" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Message <span class="text-red-500">*</span></label>
+                        <textarea id="c-message" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary outline-none transition resize-none"></textarea>
+                        <p id="c-message-error" class="hidden text-red-500 text-xs mt-1">Message is required.</p>
+                    </div>
+                    <button type="submit" class="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <a href="#" class="flex items-center space-x-2 mb-4">
+                    <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span class="font-bold text-xl tracking-wide">Jarurat Care</span>
+                </a>
+                <p class="text-gray-400 text-sm">Jaisi Jarurat, Vaisi Care</p>
+                <p class="text-gray-400 text-sm mt-4">support@jarurat.care</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#about" class="hover:text-primary transition">About Us</a></li>
+                    <li><a href="#support" class="hover:text-primary transition">Get Support</a></li>
+                    <li><a href="#volunteer" class="hover:text-primary transition">Volunteer</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Legal</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-primary transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-primary transition">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+            © 2026 Jarurat Care Foundation. Built with ❤️ for cancer warriors.
+        </div>
+    </footer>
+
+    <!-- API Key Modal -->
+    <div id="api-key-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4 font-sans">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Enter API Key to activate Hope Assistant</h3>
+                <button id="close-api-modal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-sm text-gray-600 mb-6">Your key is stored only in your browser (localStorage) and never sent anywhere except Anthropic's API.</p>
+            
+            <div class="mb-6">
+                <input type="password" id="api-key-input" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-gray-50" placeholder="sk-ant-...">
+            </div>
+            
+            <div class="flex flex-col space-y-3">
+                <button id="save-api-key" class="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold shadow-md transition transform hover:-translate-y-0.5">
+                    Save & Start Chatting
+                </button>
+                <button id="clear-api-key" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-red-600 rounded-xl font-semibold transition hidden">
+                    Clear API Key
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-xs text-gray-500">
+                    Get a free API key at <a href="https://console.anthropic.com" target="_blank" class="text-primary font-medium hover:underline">console.anthropic.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div id="chatbot-container" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden w-[90vw] max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden mb-4 transition-all duration-300 opacity-0 scale-95 flex-col h-[500px] max-h-[70vh]">
+            <!-- Header -->
+            <div class="bg-primary text-white p-4 flex justify-between items-center shadow-sm z-10">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.12.66 4.09 1.78 5.72L2 22l4.28-1.78C7.91 21.34 9.88 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                    <div>
+                        <span class="font-semibold block text-sm">Hope 💙</span>
+                        <span class="text-xs text-teal-100">Jarurat Care Assistant</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <button id="settings-api-btn" class="text-white hover:text-teal-200 transition p-1" title="API Settings">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </button>
+                    <button id="close-chat" class="text-white hover:text-teal-200 transition p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Messages Area -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col space-y-4">
+                <!-- Initial Message -->
+                <div class="flex">
+                    <div class="bg-white border border-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm shadow-sm max-w-[85%] text-sm leading-relaxed">
+                        Hi! I'm Hope, Jarurat Care's support assistant. I can answer questions about our services, cancer support, and how to get help. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-3 bg-white border-t border-gray-100 shrink-0">
+                <form id="chat-form" class="flex items-end space-x-2 relative">
+                    <textarea id="chat-input" rows="1" class="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none max-h-24" placeholder="Type your message..."></textarea>
+                    <button type="submit" id="chat-submit" class="bg-primary text-white p-3 rounded-full hover:bg-teal-700 transition flex-shrink-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50">
+                        <svg class="w-5 h-5 translate-x-[1px] translate-y-[-1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Toggle Button -->
+        <button id="chat-toggle" class="bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-2xl hover:shadow-primary/50 transition transform hover:scale-105 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary/30 z-50">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // --- 1. CONFIGURATION ---
+        let CLAUDE_API_KEY = localStorage.getItem('hope_api_key');
+        
+        // --- 2. MOBILE MENU ---
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- 3. SCROLL REVEAL ANIMATIONS ---
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- 4. FORM VALIDATION & SUBMISSION ---
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validateField(input, errorEl, condition) {
+            if (!condition) {
+                input.classList.add('input-error');
+                errorEl.classList.remove('hidden');
+                return false;
+            } else {
+                input.classList.remove('input-error');
+                errorEl.classList.add('hidden');
+                return true;
+            }
+        }
+
+        // Patient Support Form
+        const patientForm = document.getElementById('patient-form');
+        patientForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const nameEl = document.getElementById('p-name');
+            const emailEl = document.getElementById('p-email');
+            const phoneEl = document.getElementById('p-phone');
+            const cancerEl = document.getElementById('p-cancer');
+            const supportGroup = document.querySelectorAll('input[name="supportNeeded"]:checked');
+            const supportError = document.getElementById('p-support-error');
+            
+            const vName = validateField(nameEl, document.getElementById('p-name-error'), nameEl.value.trim().length > 0);
+            const vEmail = validateField(emailEl, document.getElementById('p-email-error'), isValidEmail(emailEl.value));
+            const vPhone = validateField(phoneEl, document.getElementById('p-phone-error'), phoneEl.value.trim().length > 0);
+            const vCancer = validateField(cancerEl, document.getElementById('p-cancer-error'), cancerEl.value !== '');
+            
+            let vSupport = supportGroup.length > 0;
+            if(!vSupport) { supportError.classList.remove('hidden'); } else { supportError.classList.add('hidden'); }
+
+            if (vName && vEmail && vPhone && vCancer && vSupport) {
+                const formData = new FormData(patientForm);
+                const data = Object.fromEntries(formData.entries());
+                data.supportNeeded = formData.getAll('supportNeeded');
+                
+                localStorage.setItem('patientSupport', JSON.stringify(data));
+                
+                const firstName = data.fullName.split(' ')[0];
+                document.getElementById('patient-success-text').innerHTML = `Thank you ${firstName}. Our team will reach out to you at ${data.email} within 24 hours. You are not alone. 💙`;
+                document.getElementById('patient-success').classList.remove('hidden');
+                
+                patientForm.reset();
+                renderPatientSummary();
+            }
+        });
+
+        function renderPatientSummary() {
+            const data = JSON.parse(localStorage.getItem('patientSupport'));
+            const container = document.getElementById('patient-summary-container');
+            if (data) {
+                container.innerHTML = `
+                    <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg border-l-4 border-primary animate-slide-up">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">Your Request Summary</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <p class="text-sm text-gray-600"><strong class="text-gray-800">Name:</strong> ${data.fullName}</p>
+                            <p class="text-sm text-gray-600"><strong class="text-gray-800">Cancer Type:</strong> ${data.cancerType}</p>
+                            <p class="text-sm text-gray-600"><strong class="text-gray-800">Stage:</strong> ${data.stage || 'Not specified'}</p>
+                            <p class="text-sm text-gray-600"><strong class="text-gray-800">Support:</strong> ${data.supportNeeded.join(', ')}</p>
+                        </div>
+                        <div class="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-semibold">
+                            Status: Received. Pending Review.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        renderPatientSummary();
+
+        // Volunteer Form
+        const volunteerForm = document.getElementById('volunteer-form');
+        volunteerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameEl = document.getElementById('v-name');
+            const emailEl = document.getElementById('v-email');
+            const phoneEl = document.getElementById('v-phone');
+            
+            const vName = validateField(nameEl, document.getElementById('v-name-error'), nameEl.value.trim().length > 0);
+            const vEmail = validateField(emailEl, document.getElementById('v-email-error'), isValidEmail(emailEl.value));
+            const vPhone = validateField(phoneEl, document.getElementById('v-phone-error'), phoneEl.value.trim().length > 0);
+
+            if(vName && vEmail && vPhone) {
+                const firstName = nameEl.value.split(' ')[0];
+                document.getElementById('volunteer-success-text').innerHTML = `Thank you ${firstName}! We'll be in touch soon. Together we can make a difference. 🌿`;
+                document.getElementById('volunteer-success').classList.remove('hidden');
+                volunteerForm.reset();
+            }
+        });
+
+        // Contact Form
+        const contactForm = document.getElementById('contact-form');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameEl = document.getElementById('c-name');
+            const emailEl = document.getElementById('c-email');
+            const msgEl = document.getElementById('c-message');
+            
+            const vName = validateField(nameEl, document.getElementById('c-name-error'), nameEl.value.trim().length > 0);
+            const vEmail = validateField(emailEl, document.getElementById('c-email-error'), isValidEmail(emailEl.value));
+            const vMsg = validateField(msgEl, document.getElementById('c-message-error'), msgEl.value.trim().length > 0);
+
+            if(vName && vEmail && vMsg) {
+                document.getElementById('contact-success').classList.remove('hidden');
+                contactForm.reset();
+            }
+        });
+
+        // --- 5. AI CHATBOT (CLAUDE API) ---
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatSubmit = document.getElementById('chat-submit');
+
+        let isChatOpen = false;
+        let chatHistory = [];
+
+        // API Key Modal Logic
+        const apiModal = document.getElementById('api-key-modal');
+        const closeApiModal = document.getElementById('close-api-modal');
+        const saveApiBtn = document.getElementById('save-api-key');
+        const clearApiBtn = document.getElementById('clear-api-key');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const settingsBtn = document.getElementById('settings-api-btn');
+
+        function openApiModal() {
+            apiKeyInput.value = CLAUDE_API_KEY || '';
+            if (CLAUDE_API_KEY) {
+                clearApiBtn.classList.remove('hidden');
+            } else {
+                clearApiBtn.classList.add('hidden');
+            }
+            apiModal.classList.remove('hidden');
+        }
+
+        function closeApiModalFunc() {
+            apiModal.classList.add('hidden');
+        }
+
+        if (closeApiModal) closeApiModal.addEventListener('click', closeApiModalFunc);
+        if (settingsBtn) settingsBtn.addEventListener('click', openApiModal);
+
+        if (saveApiBtn) {
+            saveApiBtn.addEventListener('click', () => {
+                const key = apiKeyInput.value.trim();
+                if (key) {
+                    localStorage.setItem('hope_api_key', key);
+                    CLAUDE_API_KEY = key;
+                    closeApiModalFunc();
+                    
+                    if (!isChatOpen) toggleChat();
+                }
+            });
+        }
+
+        if (clearApiBtn) {
+            clearApiBtn.addEventListener('click', () => {
+                localStorage.removeItem('hope_api_key');
+                CLAUDE_API_KEY = null;
+                apiKeyInput.value = '';
+                clearApiBtn.classList.add('hidden');
+            });
+        }
+
+        function toggleChat() {
+            if (!isChatOpen && !CLAUDE_API_KEY) {
+                openApiModal();
+                return;
+            }
+            isChatOpen = !isChatOpen;
+            if (isChatOpen) {
+                chatWindow.classList.remove('hidden');
+                // Small delay for transition
+                setTimeout(() => {
+                    chatWindow.classList.remove('opacity-0', 'scale-95');
+                    chatWindow.classList.add('opacity-100', 'scale-100', 'flex');
+                    chatInput.focus();
+                }, 10);
+                chatToggle.classList.add('hidden');
+            } else {
+                chatWindow.classList.remove('opacity-100', 'scale-100');
+                chatWindow.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                    chatWindow.classList.remove('flex');
+                    chatToggle.classList.remove('hidden');
+                }, 300);
+            }
+        }
+
+        chatToggle.addEventListener('click', toggleChat);
+        closeChat.addEventListener('click', toggleChat);
+        
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight < 96 ? this.scrollHeight : 96) + 'px';
+        });
+
+        // Handle Enter to submit (Shift+Enter for new line)
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        function appendMessage(text, sender) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex ' + (sender === 'user' ? 'justify-end' : 'justify-start');
+            
+            const msgBubble = document.createElement('div');
+            msgBubble.className = 'p-3 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed ' + 
+                (sender === 'user' 
+                    ? 'bg-primary text-white rounded-tr-sm' 
+                    : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm');
+            
+            // Basic markdown handling for simple bold and line breaks
+            let formattedText = text.replace(/\n/g, '<br>');
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            msgBubble.innerHTML = formattedText;
+            wrapper.appendChild(msgBubble);
+            chatMessages.appendChild(wrapper);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const id = 'typing-' + Date.now();
+            const wrapper = document.createElement('div');
+            wrapper.id = id;
+            wrapper.className = 'flex justify-start';
+            wrapper.innerHTML = `
+                <div class="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center h-10">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+
+        function hideTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if(el) el.remove();
+        }
+
+        async function callGeminiAPI(messages) {
+            const systemPrompt = "You are Hope, a compassionate AI assistant for Jarurat Care Foundation — an Indian NGO that supports patients with Gallbladder Cancer, Cholangiocarcinoma, and Liver Cancer. You help patients and caregivers by:\n- Answering questions about Jarurat Care's services (free oncologist consultations, nutritional support, emotional support, financial assistance)\n- Providing general information about these cancer types in simple, easy-to-understand language\n- Guiding users to fill out the Patient Support form or Volunteer form\n- Offering emotional support and encouragement\n- Directing urgent medical questions to qualified doctors\n\nAlways be warm, empathetic, and supportive. Never provide specific medical diagnoses or treatment recommendations. Always encourage users to consult with doctors. Keep responses concise and in simple English. If someone seems distressed, acknowledge their feelings first before providing information.";
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': CLAUDE_API_KEY
+                    },
+                    body: JSON.stringify({
+                        contents: messages,
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("API Error Response:", errorData);
+                    throw new Error(errorData.error?.message || 'API Request Failed');
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                throw error;
+            }
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // Update UI
+            chatInput.value = '';
+            chatInput.style.height = 'auto'; // Reset height
+            chatSubmit.disabled = true;
+            
+            appendMessage(text, 'user');
+            
+            // Format for API
+            chatHistory.push({ role: 'user', parts: [{ text: text }] });
+            
+            if (!CLAUDE_API_KEY) {
+                chatHistory.pop();
+                chatInput.value = text; // Restore text
+                chatSubmit.disabled = false;
+                openApiModal();
+                return;
+            }
+
+            const typingId = showTypingIndicator();
+
+            try {
+                // Ensure correct format for messages array
+                const responseText = await callGeminiAPI(chatHistory);
+                
+                hideTypingIndicator(typingId);
+                chatHistory.push({ role: 'model', parts: [{ text: responseText }] });
+                appendMessage(responseText, 'model');
+            } catch (error) {
+                hideTypingIndicator(typingId);
+                chatHistory.pop(); // remove failed msg from history
+                appendMessage("I'm sorry, I'm having trouble connecting to my network right now. Please try again later.", 'model');
+            } finally {
+                chatSubmit.disabled = false;
+                chatInput.focus();
+            }
+        });
+
+    </script>
+</body>
+</html>
